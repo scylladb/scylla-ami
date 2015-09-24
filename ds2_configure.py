@@ -307,7 +307,7 @@ def get_seed_list():
         if options.reflector:
             reflector = options.reflector
         else:
-            reflector = 'http://reflector2.datastax.com/reflector2.php'
+            reflector = 'http://reflector.scylladb.com/reflector.php'
 
         req = urllib2.Request('{0}?indexid={1}&reservationid={2}&internalip={3}&externaldns={4}&second_seed_index={5}&third_seed_index={6}'.format(
                                     reflector,
