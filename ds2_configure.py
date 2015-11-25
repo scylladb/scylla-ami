@@ -28,7 +28,7 @@ import conf
 
 instance_data = {}
 config_data = {}
-config_data['conf_path'] = os.path.expanduser("/var/lib/scylla/conf/")
+config_data['conf_path'] = os.path.expanduser("/etc/scylla/")
 config_data['opsc_conf_path'] = os.path.expanduser("/etc/opscenter/")
 options = False
 
