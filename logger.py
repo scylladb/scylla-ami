@@ -11,7 +11,7 @@ import time
 
 from exceptions import SystemExit
 
-configfile = '/home/fedora/ami.log'
+configfile = '/var/lib/scylla/ami.log'
 
 def appendLog(text):
     with open(configfile, "a") as f:
