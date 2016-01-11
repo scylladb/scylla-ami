@@ -3,7 +3,7 @@
 
 import ConfigParser
 
-configfile = '/home/fedora/ami.conf'
+configfile = '/etc/scylla/ami.conf'
 
 config = ConfigParser.RawConfigParser()
 config.read(configfile)
