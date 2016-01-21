@@ -400,11 +400,10 @@ def construct_yaml():
         logger.info("meta-data:external-ipv4: %s" % instance_data['externalip'])
         yaml = p.sub('broadcast_address: {0}'.format(instance_data['externalip']), yaml)
 
-# XXX: Commented out to use SimpleSnitch
-    # Uses the EC2Snitch for Community Editions
-#    if conf.get_config("AMI", "Type") == "Community":
-#        yaml = yaml.replace('endpoint_snitch: org.apache.cassandra.locator.SimpleSnitch', 'endpoint_snitch: org.apache.cassandra.locator.GossipingPropertyFileSnitch')
-#        yaml = yaml.replace('endpoint_snitch: SimpleSnitch', 'endpoint_snitch: GossipingPropertyFileSnitch')
+    # Uses the Ec2Snitch for Community Editions
+    if conf.get_config("AMI", "Type") == "Community":
+        yaml = yaml.replace('endpoint_snitch: org.apache.cassandra.locator.SimpleSnitch', 'endpoint_snitch: org.apache.cassandra.locator.Ec2Snitch')
+        yaml = yaml.replace('endpoint_snitch: SimpleSnitch', 'endpoint_snitch: Ec2Snitch')
 
     # Set cluster_name to reservationid
     instance_data['clustername'] = instance_data['clustername'].strip("'").strip('"')
