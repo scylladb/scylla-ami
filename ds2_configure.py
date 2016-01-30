@@ -31,7 +31,6 @@ config_data = {}
 config_data['conf_path'] = os.path.expanduser("/etc/scylla/")
 config_data['opsc_conf_path'] = os.path.expanduser("/etc/opscenter/")
 options = False
-ami_configured = '/etc/scylla/ami_configured'
 
 def exit_path(errorMsg, append_msg=False):
     if not append_msg:
@@ -467,10 +466,6 @@ def construct_yaml():
 
 
 if __name__ == '__main__':
-    if os.path.exists(ami_configured):
-       print("AMI has already configured, skipping configuration.")
-       sys.exit(0)
-
     print("Waiting for cloud-init to finish...")
     time.sleep(10)
     try:
@@ -482,5 +477,3 @@ if __name__ == '__main__':
     use_ec2_userdata()
     get_seed_list()
     construct_yaml()
-    with open(ami_configured, 'w') as f:
-        f.write('')
