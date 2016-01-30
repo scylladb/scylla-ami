@@ -1,0 +1,12 @@
+[Unit]
+Description=Scylla AMI Setup
+Before=scylla-server.service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/scylla/scylla-ami/scylla_ami_setup
+RemainAfterExit=yes
+
+[Install]
+RequiredBy=scylla-server.service
