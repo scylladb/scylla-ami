@@ -31,6 +31,7 @@ config_data = {}
 config_data['conf_path'] = os.path.expanduser("/etc/scylla/")
 config_data['opsc_conf_path'] = os.path.expanduser("/etc/opscenter/")
 options = False
+ami_disabled = '/etc/scylla/ami_disabled'
 
 def exit_path(errorMsg, append_msg=False):
     if not append_msg:
@@ -223,6 +224,8 @@ def parse_ec2_userdata():
     parser.add_argument("--base64postscript", action="store", type=str, dest="base64postscript")
     # Option that allows to download and execute a custom script
     parser.add_argument("--postscript_url", action="store", type=str, dest="postscript_url")
+    # Option that stops scylla-server on instance startup
+    parser.add_argument("--stop-services", action="store_true", dest="stop_services", default=False)
 
     # Grab provided reflector through provided userdata
     global options
@@ -278,6 +281,10 @@ def use_ec2_userdata():
 
     if options.opscenterip:
         instance_data['opscenterip'] = options.opscenterip
+
+    if options.stop_services:
+        with open(ami_disabled, 'w') as f:
+            f.write('')
 
     options.realtimenodes = (options.totalnodes - options.analyticsnodes - options.searchnodes)
     options.seed_indexes = [0, options.realtimenodes, options.realtimenodes + options.analyticsnodes]
