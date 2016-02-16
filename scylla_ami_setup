@@ -23,12 +23,12 @@ else
     done
 
     if [ "$DISKS" != "" ]; then
-        /usr/lib/scylla/scylla_raid_setup -d $DISKS
+        /usr/lib/scylla/scylla_raid_setup --disks $DISKS
     fi
 fi
 
 if [ ! -f /etc/scylla/ami_configured ]; then
-    /usr/lib/scylla/scylla_sysconfig_setup -N -a
+    /usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --setup-nic
     /usr/lib/scylla/scylla-ami/ds2_configure.py
     touch /etc/scylla/ami_configured
 fi
