@@ -7,6 +7,7 @@ After=network.target
 Type=oneshot
 ExecStart=/usr/lib/scylla/scylla-ami/scylla_ami_setup
 RemainAfterExit=yes
+TimeoutStartSec=900
 
 [Install]
 RequiredBy=scylla-server.service
