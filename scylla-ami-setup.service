@@ -1,6 +1,6 @@
 [Unit]
 Description=Scylla AMI Setup
-Before=scylla-server.service
+Before=scylla-io-setup.service
 After=network.target
 
 [Service]
@@ -10,4 +10,4 @@ RemainAfterExit=yes
 TimeoutStartSec=900
 
 [Install]
-RequiredBy=scylla-server.service
+RequiredBy=scylla-io-setup.service
