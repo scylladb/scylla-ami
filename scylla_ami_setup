@@ -3,7 +3,6 @@
 RAIDCNT=`grep xvdb /proc/mdstat | wc -l`
 RAIDDEV=`grep xvdb /proc/mdstat | awk '{print $1}'`
 
-DISK_COUNT=0
 if [ $RAIDCNT -ge 1 ]; then
     echo "RAID already constructed."
     if [ "`mount|grep /var/lib/scylla`" = "" ]; then
@@ -20,7 +19,6 @@ else
             else
                 DISKS="$DISKS,$i"
             fi
-            DISK_COUNT=$((DISK_COUNT+1))
         fi
     done
 
@@ -30,7 +28,7 @@ else
 fi
 
 if [ ! -f /etc/scylla/ami_configured ]; then
-    /usr/lib/scylla/scylla_sysconfig_setup --ami --nic eth0 --setup-nic --disk-count $DISK_COUNT
+    /usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --setup-nic
     /usr/lib/scylla/scylla-ami/ds2_configure.py
     touch /etc/scylla/ami_configured
 fi
