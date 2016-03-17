@@ -13,10 +13,11 @@ print_usage() {
     echo "  --unstable  use unstable branch"
     exit 1
 }
+. /etc/os-release
 for OPT in "$@"; do
     case "$OPT" in
         "--localrpm")
-            INSTALL_ARGS="$INSTALL_ARGS --local-pkg /home/centos"
+            INSTALL_ARGS="$INSTALL_ARGS --local-pkg /home/$ID"
             shift 1
             ;;
         "--unstable")
@@ -29,13 +30,18 @@ for OPT in "$@"; do
     esac
 done
 
-yum remove -y abrt
-chmod a+rx /home/centos/scylla_install_pkg
-sh -x -e /home/centos/scylla_install_pkg $INSTALL_ARGS
+if [ "$ID" = "ubuntu" ]; then
+    apt-get purge -y apport
+else
+    yum remove -y abrt
+    mv /home/centos/scylla-ami/scylla-ami-setup.service /usr/lib/systemd/system/
+    systemctl daemon-reload
+    systemctl enable scylla-ami-setup.service
+fi
+chmod a+rx /home/$ID/scylla_install_pkg
+sh -x -e /home/$ID/scylla_install_pkg $INSTALL_ARGS
 grep -v ' - mounts' /etc/cloud/cloud.cfg > /tmp/cloud.cfg
 mv /tmp/cloud.cfg /etc/cloud/cloud.cfg
-mv /home/centos/scylla-ami/scylla-ami-setup.service /usr/lib/systemd/system/
-mv /home/centos/scylla-ami /usr/lib/scylla/scylla-ami
-systemctl daemon-reload
-systemctl enable scylla-ami-setup.service
+mv /home/$ID/scylla-ami /usr/lib/scylla/scylla-ami
 sh -x -e /usr/lib/scylla/scylla_setup --ntp-domain amazon --no-coredump-setup --no-sysconfig-setup --no-raid-setup
+sh -x -e /usr/lib/scylla/scylla_sysconfig_setup --ami
