@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 RAIDCNT=`grep xvdb /proc/mdstat | wc -l`
 RAIDDEV=`grep xvdb /proc/mdstat | awk '{print $1}'`
