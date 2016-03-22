@@ -43,5 +43,5 @@ sh -x -e /home/$ID/scylla_install_pkg $INSTALL_ARGS
 grep -v ' - mounts' /etc/cloud/cloud.cfg > /tmp/cloud.cfg
 mv /tmp/cloud.cfg /etc/cloud/cloud.cfg
 mv /home/$ID/scylla-ami /usr/lib/scylla/scylla-ami
-sh -x -e /usr/lib/scylla/scylla_setup --ntp-domain amazon --no-coredump-setup --no-sysconfig-setup --no-raid-setup
+sh -x -e /usr/lib/scylla/scylla_setup --ntp-domain amazon --no-coredump-setup --no-sysconfig-setup --no-raid-setup --no-io-setup
 sh -x -e /usr/lib/scylla/scylla_sysconfig_setup --ami
