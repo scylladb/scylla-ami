@@ -1,5 +1,13 @@
 #!/bin/bash -e
 
+is_supported_instance_type() {
+    TYPE=`curl http://169.254.169.254/latest/meta-data/instance-type|cut -d . -f 1`
+    case $TYPE in
+        "m3"|"c3"|"i2") echo 1;;
+        *) echo 0;;
+    esac
+}
+
 RAIDCNT=`grep xvdb /proc/mdstat | wc -l`
 RAIDDEV=`grep xvdb /proc/mdstat | awk '{print $1}'`
 
@@ -30,5 +38,10 @@ fi
 if [ ! -f /etc/scylla/ami_configured ]; then
     /usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --setup-nic --ami
     /usr/lib/scylla/scylla-ami/ds2_configure.py
+    if [ `is_supported_instance_type` -eq 1 ]; then
+        /usr/lib/scylla/scylla_io_setup --ami
+    else
+        /usr/lib/scylla/scylla_dev_mode_setup --developer-mode 1
+    fi
     touch /etc/scylla/ami_configured
 fi
