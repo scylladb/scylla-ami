@@ -36,7 +36,14 @@ else
 fi
 
 if [ ! -f /etc/scylla/ami_configured ]; then
-    /usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --setup-nic --ami
+    NR_CPU=`cat /proc/cpuinfo |grep processor|wc -l`
+    if [ $NR_CPU -lt 8 ]; then
+        /usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --ami
+    else
+        NR=$((NR_CPU - 1))
+        /usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --setup-nic --ami
+        /usr/lib/scylla/scylla_cpuset_setup --cpuset 1-$NR --smp $NR
+    fi
     /usr/lib/scylla/scylla-ami/ds2_configure.py
     if [ `is_supported_instance_type` -eq 1 ]; then
         /usr/lib/scylla/scylla_io_setup --ami
