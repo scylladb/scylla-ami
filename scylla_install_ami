@@ -39,10 +39,10 @@ else
     systemctl enable scylla-ami-setup.service
 fi
 chmod a+rx /home/$ID/scylla_install_pkg
-sh -x -e /home/$ID/scylla_install_pkg $INSTALL_ARGS
+/home/$ID/scylla_install_pkg $INSTALL_ARGS
 grep -v ' - mounts' /etc/cloud/cloud.cfg > /tmp/cloud.cfg
 mv /tmp/cloud.cfg /etc/cloud/cloud.cfg
 mv /home/$ID/scylla-ami /usr/lib/scylla/scylla-ami
-sh -x -e /usr/lib/scylla/scylla_setup --ntp-domain amazon --no-coredump-setup --no-sysconfig-setup --no-raid-setup --no-io-setup --no-bootparam-setup
-sh -x -e /usr/lib/scylla/scylla_sysconfig_setup --ami
-sh -x -e /usr/lib/scylla/scylla_bootparam_setup --ami
+/usr/lib/scylla/scylla_setup --ntp-domain amazon --no-coredump-setup --no-sysconfig-setup --no-raid-setup --no-io-setup --no-bootparam-setup
+/usr/lib/scylla/scylla_sysconfig_setup --ami
+/usr/lib/scylla/scylla_bootparam_setup --ami
