@@ -47,8 +47,6 @@ if [ ! -f /etc/scylla/ami_configured ]; then
     /usr/lib/scylla/scylla-ami/ds2_configure.py
     if [ `is_supported_instance_type` -eq 1 ]; then
         /usr/lib/scylla/scylla_io_setup --ami
-    else
-        /usr/lib/scylla/scylla_dev_mode_setup --developer-mode 1
     fi
     touch /etc/scylla/ami_configured
 fi
