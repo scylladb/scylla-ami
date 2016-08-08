@@ -48,5 +48,10 @@ if [ ! -f /etc/scylla/ami_configured ]; then
     if [ `is_supported_instance_type` -eq 1 ]; then
         /usr/lib/scylla/scylla_io_setup --ami
     fi
+    if [ "`mount|grep /var/lib/scylla`" != "" ]; then
+        /usr/lib/scylla/scylla_coredump_setup --dump-to-raiddir
+    else
+        /usr/lib/scylla/scylla_coredump_setup
+    fi
     touch /etc/scylla/ami_configured
 fi
