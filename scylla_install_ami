@@ -46,3 +46,4 @@ mv /home/$ID/scylla-ami /usr/lib/scylla/scylla-ami
 /usr/lib/scylla/scylla_setup --ntp-domain amazon --no-coredump-setup --no-sysconfig-setup --no-raid-setup --no-io-setup --no-bootparam-setup
 /usr/lib/scylla/scylla_sysconfig_setup --ami
 /usr/lib/scylla/scylla_bootparam_setup --ami
+rm -fv /home/$ID/.ssh/authorized_keys
