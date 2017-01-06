@@ -476,7 +476,7 @@ if __name__ == '__main__':
     print("Waiting for cloud-init to finish...")
     time.sleep(10)
     try:
-	get_ec2_data()
+        get_ec2_data()
     except urllib2.HTTPError:
         exit_path("Clusters backed by Spot Instances are not supported.")
 
