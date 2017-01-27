@@ -226,6 +226,8 @@ def parse_ec2_userdata():
     parser.add_argument("--postscript_url", action="store", type=str, dest="postscript_url")
     # Option that stops scylla-server on instance startup
     parser.add_argument("--stop-services", action="store_true", dest="stop_services", default=False)
+    # Option that enables developer mode
+    parser.add_argument("--developer-mode", action="store_true", dest="developer_mode", default=False)
 
     # Grab provided reflector through provided userdata
     global options
@@ -471,6 +473,9 @@ def construct_yaml():
 
     logger.info('scylla.yaml configured.')
 
+def construct_devmode_conf():
+    if options.developer_mode:
+        subprocess.check_call(["/usr/sbin/scylla_dev_mode_setup", "--developer-mode", "1"])
 
 if __name__ == '__main__':
     print("Waiting for cloud-init to finish...")
@@ -484,3 +489,4 @@ if __name__ == '__main__':
     use_ec2_userdata()
     get_seed_list()
     construct_yaml()
+    construct_devmode_conf()
