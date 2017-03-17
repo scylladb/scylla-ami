@@ -75,6 +75,9 @@ def read_role(t):
         logger.warn("Unspecified role for %s: assuming default (%s)"%(t, c))
     return c
 
+def device_exists(dev):
+    return os.path.exists("/dev/%s" % dev)
+
 # While testing this, I found the following issue at AWS:
 #
 # $ ls /dev/nvme*
@@ -127,6 +130,8 @@ def get_disk_bundles():
 
         if not typemap.has_key(t):
             typemap[t] = []
+        if not device_exists(xenify(dev)):
+            continue
         typemap[t] += [ xenify(dev) ]
 
     # One of the desired types not found: The other type has it all
