@@ -11,4 +11,4 @@ enabled=1
 retries=5
 timeout=10
 report_instanceid=yes
-includepkgs=kernel* perf
+includepkgs=kernel*
