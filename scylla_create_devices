@@ -7,6 +7,7 @@ import subprocess
 import logger
 import conf
 import os
+import sys
 
 raid_script="/usr/lib/scylla/scylla_raid_setup"
 raid_device = "/dev/md%d"
@@ -136,7 +137,8 @@ def get_disk_bundles():
 
     # One of the desired types not found: The other type has it all
     if not typemap.has_key("ebs") and not typemap.has_key("ephemeral"):
-        raise Exception("No disks found")
+        sys.stderr.write("No disks found\n")
+        sys.exit(0)
     elif not typemap.has_key("ebs"):
         role["ephemeral"] = "all"
     elif not typemap.has_key("ephemeral"):
