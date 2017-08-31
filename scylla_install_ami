@@ -48,6 +48,7 @@ else
     systemctl daemon-reload
     systemctl enable scylla-ami-setup.service
     mv /home/centos/scylla-ami/amzn-main.repo /etc/yum.repos.d
+    yum -y install grubby
     yum -y update kernel
 fi
 chmod a+rx /home/$ID/scylla_install_pkg
