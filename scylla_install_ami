@@ -2,6 +2,9 @@
 #
 #  Copyright (C) 2015 ScyllaDB
 
+IXGBEVF_VER=4.3.4
+ENA_VER=1.0.0
+
 if [ "`id -u`" -ne 0 ]; then
     echo "Requires root permission."
     exit 1
@@ -47,10 +50,10 @@ else
     mv /home/centos/scylla-ami/scylla-ami-setup.service /usr/lib/systemd/system/
     systemctl daemon-reload
     systemctl enable scylla-ami-setup.service
-    yum -y install grubby
+    yum -y install grubby kernel-devel-$(uname -r)
     rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
     rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
-    yum -y --enablerepo=elrepo-kernel install kernel-ml
+    yum -y --enablerepo=elrepo-kernel install kernel-ml kernel-ml-devel
     sed -i '/^GRUB\_CMDLINE\_LINUX/s/\"$/\ net\.ifnames\=0\"/' /etc/default/grub
     grub2-mkconfig -o /boot/grub2/grub.cfg
     MLKVER=`ls /boot/vmlinuz-*el7.elrepo.x86_64|sed -n "1s#/boot/vmlinuz-##p"`
@@ -66,3 +69,50 @@ mv /home/$ID/scylla-ami /usr/lib/scylla/scylla-ami
 /usr/lib/scylla/scylla_sysconfig_setup --ami
 /usr/lib/scylla/scylla_bootparam_setup --ami
 rm -fv /home/$ID/.ssh/authorized_keys
+
+if [ "$ID" = "ubuntu" ]; then
+    apt-get install -y dkms git
+else
+    yum install -y dkms git
+fi
+
+curl -L -O https://sourceforge.net/projects/e1000/files/ixgbevf%20stable/$IXGBEVF_VER/ixgbevf-$IXGBEVF_VER.tar.gz
+tar -C /usr/src -xvpf ixgbevf-$IXGBEVF_VER.tar.gz
+cat << EOS > /usr/src/ixgbevf-$IXGBEVF_VER/dkms.conf
+PACKAGE_NAME="ixgbevf"
+PACKAGE_VERSION="$IXGBEVF_VER"
+CLEAN="cd src/; make clean"
+MAKE="cd src/; make CFLAGS_EXTRA=-Wno-pointer-sign BUILD_KERNEL=\${kernelver}"
+BUILT_MODULE_LOCATION[0]="src/"
+BUILT_MODULE_NAME[0]="ixgbevf"
+DEST_MODULE_LOCATION[0]="/updates"
+DEST_MODULE_NAME[0]="ixgbevf"
+AUTOINSTALL="yes"
+EOS
+dkms add -m ixgbevf -v $IXGBEVF_VER
+dkms build -m ixgbevf -v $IXGBEVF_VER
+dkms build -m ixgbevf -v $IXGBEVF_VER -k $MLKVER
+dkms install -m ixgbevf -v $IXGBEVF_VER --all
+
+git clone https://github.com/amzn/amzn-drivers /usr/src/amzn-drivers-1.0.0
+cat << EOS > /usr/src/amzn-drivers-$ENA_VER/dkms.conf
+PACKAGE_NAME="ena"
+PACKAGE_VERSION="$ENA_VER"
+CLEAN="make -C kernel/linux/ena clean"
+MAKE="make -C kernel/linux/ena BUILD_KERNEL=\${kernelver}"
+BUILT_MODULE_LOCATION[0]="kernel/linux/ena"
+BUILT_MODULE_NAME[0]="ena"
+DEST_MODULE_LOCATION[0]="/updates"
+DEST_MODULE_NAME[0]="ena"
+AUTOINSTALL="yes"
+EOS
+dkms add -m amzn-drivers -v $ENA_VER
+dkms build -m amzn-drivers -v $ENA_VER
+dkms build -m amzn-drivers -v $ENA_VER -k $MLKVER
+dkms install -m amzn-drivers -v $ENA_VER
+
+if [ "$ID" = "ubuntu" ]; then
+    update-initramfs -c -k all
+else
+    dracut --verbose --add-drivers "amzn-drivers nvme ena" --force
+fi
