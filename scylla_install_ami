@@ -51,6 +51,8 @@ else
     rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
     rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
     yum -y --enablerepo=elrepo-kernel install kernel-ml
+    sed -i '/^GRUB\_CMDLINE\_LINUX/s/\"$/\ net\.ifnames\=0\"/' /etc/default/grub
+    grub2-mkconfig -o /boot/grub2/grub.cfg
 fi
 chmod a+rx /home/$ID/scylla_install_pkg
 /home/$ID/scylla_install_pkg $INSTALL_ARGS
