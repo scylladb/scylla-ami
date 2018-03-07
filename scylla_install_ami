@@ -53,6 +53,9 @@ else
     yum -y --enablerepo=elrepo-kernel install kernel-ml
     sed -i '/^GRUB\_CMDLINE\_LINUX/s/\"$/\ net\.ifnames\=0\"/' /etc/default/grub
     grub2-mkconfig -o /boot/grub2/grub.cfg
+    MLKVER=`ls /boot/vmlinuz-*el7.elrepo.x86_64|sed -n "1s#/boot/vmlinuz-##p"`
+    grubby --grub2 --set-default /boot/vmlinuz-$MLKVER
+    echo "exclude=kernel kernel-devel" >> /etc/yum.conf
 fi
 chmod a+rx /home/$ID/scylla_install_pkg
 /home/$ID/scylla_install_pkg $INSTALL_ARGS
