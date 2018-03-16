@@ -16,9 +16,6 @@ if [ ! -f /etc/scylla/ami_configured ]; then
     fi
     ## Temporary: enable experimental CPU controller for i3
     TYPE=`curl -s http://169.254.169.254/latest/meta-data/instance-type|cut -d . -f 1`
-    if [ $TYPE == "i3" ]; then
-        sed -i "s/^SCYLLA_ARGS=\"/SCYLLA_ARGS=\"--background-writer-scheduling-quota 0.5 --auto-adjust-flush-quota 1 /" $SYSCONFIG/scylla-server
-    fi
     touch /etc/scylla/ami_configured
 else
     /usr/lib/scylla/scylla-ami/scylla_create_devices
