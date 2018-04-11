@@ -69,6 +69,7 @@ mv /home/$ID/scylla-ami /usr/lib/scylla/scylla-ami
 /usr/lib/scylla/scylla_sysconfig_setup --ami
 /usr/lib/scylla/scylla_bootparam_setup --ami
 rm -fv /home/$ID/.ssh/authorized_keys
+rm -f /var/lib/scylla-housekeeping/housekeeping.uuid
 
 if [ "$ID" = "ubuntu" ]; then
     apt-get install -y dkms git
