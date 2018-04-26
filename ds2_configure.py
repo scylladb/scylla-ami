@@ -425,9 +425,7 @@ def construct_yaml():
         instance_data['externalip'] = urllib2.urlopen(req).read()
         logger.info("meta-data:external-ipv4: %s" % instance_data['externalip'])
         yaml = p.sub('broadcast_address: {0}'.format(instance_data['externalip']), yaml)
-
-    # Uses the Ec2Snitch for Community Editions
-    if conf.get_config("AMI", "Type") == "Community":
+    else:
         yaml = yaml.replace('endpoint_snitch: org.apache.cassandra.locator.SimpleSnitch', 'endpoint_snitch: org.apache.cassandra.locator.Ec2Snitch')
         yaml = yaml.replace('endpoint_snitch: SimpleSnitch', 'endpoint_snitch: Ec2Snitch')
 
