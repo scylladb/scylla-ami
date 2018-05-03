@@ -176,9 +176,9 @@ def parse_ec2_userdata():
     # Option that forces the rpc binding to the internal IP address of the instance
     parser.add_argument("--rpcbinding", action="store_true", dest="rpcbinding", default=False)
     # How to make use of EBS if available. unused/data/commitlog/all
-    parser.add_argument("--ebs-role", action="store", type=str, dest="ebs", default="data")
+    parser.add_argument("--ebs-role", action="store", type=str, dest="ebs", default="unused")
     # How to make use of ephemeral store. unused/data/commitlog/all
-    parser.add_argument("--ephemeral-role", action="store", type=str, dest="ephemeral", default="commitlog")
+    parser.add_argument("--ephemeral-role", action="store", type=str, dest="ephemeral", default="all")
 
     # Option for multi-region
     parser.add_argument("--multiregion", action="store_true", dest="multiregion", default=False)
