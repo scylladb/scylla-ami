@@ -119,6 +119,6 @@ dkms install -m amzn-drivers -v $ENA_VER -k $MLKVER
 if [ "$ID" = "ubuntu" ]; then
     update-initramfs -c -k all
 else
-    dracut --verbose --add-drivers "amzn-drivers nvme ena" --force --kver $C7KVER
-    dracut --verbose --add-drivers "amzn-drivers nvme ena" --force --kver $MLKVER
+    dracut --verbose --add-drivers "ixgbevf nvme ena" --force --kver $C7KVER
+    dracut --verbose --add-drivers "ixgbevf nvme ena" --force --kver $MLKVER
 fi
