@@ -3,7 +3,7 @@
 #  Copyright (C) 2015 ScyllaDB
 
 IXGBEVF_VER=4.3.5
-ENA_VER=1.0.0
+ENA_VER=1.5.3
 
 if [ "`id -u`" -ne 0 ]; then
     echo "Requires root permission."
@@ -98,8 +98,8 @@ dkms build -m ixgbevf -v $IXGBEVF_VER -k $MLKVER
 dkms install -m ixgbevf -v $IXGBEVF_VER -k $C7KVER
 dkms install -m ixgbevf -v $IXGBEVF_VER -k $MLKVER
 
-git clone https://github.com/amzn/amzn-drivers /usr/src/amzn-drivers-1.0.0
-cat << EOS > /usr/src/amzn-drivers-$ENA_VER/dkms.conf
+git clone -b ena_linux_$ENA_VER https://github.com/amzn/amzn-drivers /usr/src/ena-$ENA_VER
+cat << EOS > /usr/src/ena-$ENA_VER/dkms.conf
 PACKAGE_NAME="ena"
 PACKAGE_VERSION="$ENA_VER"
 CLEAN="make -C kernel/linux/ena clean"
@@ -110,11 +110,11 @@ DEST_MODULE_LOCATION[0]="/updates"
 DEST_MODULE_NAME[0]="ena"
 AUTOINSTALL="yes"
 EOS
-dkms add -m amzn-drivers -v $ENA_VER
-dkms build -m amzn-drivers -v $ENA_VER -k $C7KVER
-dkms build -m amzn-drivers -v $ENA_VER -k $MLKVER
-dkms install -m amzn-drivers -v $ENA_VER -k $C7KVER
-dkms install -m amzn-drivers -v $ENA_VER -k $MLKVER
+dkms add -m ena -v $ENA_VER
+dkms build -m ena -v $ENA_VER -k $C7KVER
+dkms build -m ena -v $ENA_VER -k $MLKVER
+dkms install -m ena -v $ENA_VER -k $C7KVER
+dkms install -m ena -v $ENA_VER -k $MLKVER
 
 if [ "$ID" = "ubuntu" ]; then
     update-initramfs -c -k all
