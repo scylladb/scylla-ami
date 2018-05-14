@@ -2,7 +2,7 @@
 #
 #  Copyright (C) 2015 ScyllaDB
 
-IXGBEVF_VER=4.3.4
+IXGBEVF_VER=4.3.5
 ENA_VER=1.0.0
 
 if [ "`id -u`" -ne 0 ]; then
