@@ -43,6 +43,7 @@ done
 if [ "$ID" = "ubuntu" ]; then
     apt-get purge -y apport
 else
+    yum update -y
     yum remove -y abrt
     mv /home/centos/scylla-ami/scylla-ami-setup.service /usr/lib/systemd/system/
     systemctl daemon-reload
