@@ -79,6 +79,14 @@ def read_role(t):
 def device_exists(dev):
     return os.path.exists("/dev/%s" % dev)
 
+def device_is_busy(dev):
+    try:
+        fd = os.open(dev, os.O_RDWR | os.O_EXCL)
+        os.close(fd)
+        return False
+    except OSError:
+        return True
+
 # While testing this, I found the following issue at AWS:
 #
 # $ ls /dev/nvme*
@@ -115,8 +123,10 @@ def get_disk_bundles():
     devname = re.compile("^\D+")
     nvme_re = re.compile(r"nvme\d+n\d+$")
     nvmes_present = filter(nvme_re.match, os.listdir("/dev"))
-    if nvmes_present:
-        typemap["ephemeral"] = nvmes_present;
+    nvmes_free = [nvme for nvme in nvmes_present if not device_is_busy(os.path.join('/dev/', nvme))]
+
+    if nvmes_free:
+        typemap["ephemeral"] = nvmes_free;
 
     for dev in devmap.splitlines():
         if dev == "ami" or dev == "root":
