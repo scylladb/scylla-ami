@@ -19,22 +19,26 @@ print_usage() {
     exit 1
 }
 
+LOCALRPM=
+REPO_FOR_INSTALL=
+REPO_FOR_UPDATE=
 while [ $# -gt 0 ]; do
     case "$1" in
         "--localrpm")
-            INSTALL_ARGS="$INSTALL_ARGS --local-pkg /home/centos"
-            shift 1
+            LOCALRPM=$2
+            shift 2
             ;;
         "--repo")
-            INSTALL_ARGS="$INSTALL_ARGS --repo $2"
+            REPO_FOR_INSTALL=$2
+            REPO_FOR_UPDATE=$2
             shift 2
             ;;
         "--repo-for-install")
-            INSTALL_ARGS="$INSTALL_ARGS --repo-for-install $2"
+            REPO_FOR_INSTALL=$2
             shift 2
             ;;
         "--repo-for-update")
-            INSTALL_ARGS="$INSTALL_ARGS --repo-for-update $2"
+            REPO_FOR_UPDATE=$2
             shift 2
             ;;
         "-h" | "--help")
@@ -45,11 +49,26 @@ done
 
 yum update -y
 yum remove -y abrt
+yum install -y epel-release
+
+if [ -z "$LOCALRPM" ] && [ -z "$REPO_FOR_INSTALL" ]; then
+    echo "Error: need to specify --localrpm or --repo/--repo-for-install"
+    exit 1
+fi
+if [ -n "$REPO_FOR_INSTALL" ]; then
+    curl -L -o /etc/yum.repos.d/scylla_install.repo $REPO_FOR_INSTALL
+    yum install -y scylla
+    rm /etc/yum.repos.d/scylla_install.repo
+elif [  -n "$LOCALRPM" ]; then
+    yum install -y /home/centos/$LOCALRPM/scylla*.*.rpm
+fi
+if [ -n "$REPO_FOR_UPDATE" ]; then
+    curl -L -o /etc/yum.repos.d/scylla.repo $REPO_FOR_UPDATE
+fi
+
 mv /home/centos/scylla-ami/scylla-ami-setup.service /usr/lib/systemd/system/
 systemctl daemon-reload
 systemctl enable scylla-ami-setup.service
-chmod a+rx /home/centos/scylla_install_pkg
-/home/centos/scylla_install_pkg $INSTALL_ARGS
 grep -v ' - mounts' /etc/cloud/cloud.cfg > /tmp/cloud.cfg
 mv /tmp/cloud.cfg /etc/cloud/cloud.cfg
 mv /home/centos/scylla-ami /usr/lib/scylla/scylla-ami
