@@ -492,6 +492,24 @@ def construct_devmode_conf():
     if options.developer_mode:
         subprocess.check_call(["/usr/sbin/scylla_dev_mode_setup", "--developer-mode", "1"])
 
+def additional_post_configurations():
+    if options.base64postscript:
+        command = base64.b64decode(options.base64postscript)
+        process = subprocess.Popen(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+        read = process.communicate()
+        logger.info('base64postscript response: %s\n%s' % read)
+    if options.postscript_url:
+        logger.info("downloading postscript_url %s" % options.postscript_url)
+        try:
+            response = urllib2.urlopen(options.postscript_url)
+            process = subprocess.Popen(response.read(), stderr=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+            read = process.communicate()
+            logger.debug('postscript_url output:\n%s\n%s' % read)
+        except urllib2.URLError, e:
+            logger.exception('URLError = ' + str(e.reason))
+        except urllib2.HTTPError, e:
+            logger.exception('HTTPError = ' + str(e.code))
+
 if __name__ == '__main__':
     print("Waiting for cloud-init to finish...")
     time.sleep(10)
@@ -505,3 +523,4 @@ if __name__ == '__main__':
     get_seed_list()
     construct_yaml()
     construct_devmode_conf()
+    additional_post_configurations()
