@@ -57,10 +57,14 @@ if [ -z "$LOCALRPM" ] && [ -z "$REPO_FOR_INSTALL" ]; then
 fi
 if [ -n "$REPO_FOR_INSTALL" ]; then
     curl -L -o /etc/yum.repos.d/scylla_install.repo $REPO_FOR_INSTALL
-    yum install -y scylla
-    rm /etc/yum.repos.d/scylla_install.repo
-elif [  -n "$LOCALRPM" ]; then
+fi
+if [ -n "$LOCALRPM" ]; then
     yum install -y /home/centos/scylla*.*.rpm
+else
+    yum install -y scylla
+fi
+if  [ -n "$REPO_FOR_INSTALL" ]; then
+    rm /etc/yum.repos.d/scylla_install.repo
 fi
 if [ -n "$REPO_FOR_UPDATE" ]; then
     curl -L -o /etc/yum.repos.d/scylla.repo $REPO_FOR_UPDATE
