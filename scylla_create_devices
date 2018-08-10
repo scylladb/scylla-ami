@@ -80,13 +80,10 @@ def read_role(t):
 def device_exists(dev):
     return os.path.exists("/dev/%s" % dev)
 
-def device_is_busy(dev):
-    try:
-        fd = os.open(dev, os.O_RDWR | os.O_EXCL)
-        os.close(fd)
-        return False
-    except OSError:
-        return True
+def is_mounted(dev):
+    with open('/proc/mounts') as f:
+        mounts = f.read()
+    return True if re.findall('^{}'.format(dev), mounts, flags=re.MULTILINE) else False
 
 # While testing this, I found the following issue at AWS:
 #
@@ -124,10 +121,11 @@ def get_disk_bundles():
     devname = re.compile("^\D+")
     nvme_re = re.compile(r"nvme\d+n\d+$")
     nvmes_present = filter(nvme_re.match, os.listdir("/dev"))
-    nvmes_free = [nvme for nvme in nvmes_present if not device_is_busy(os.path.join('/dev/', nvme))]
+    nvmes_available = [nvme for nvme in nvmes_present if not is_mounted(os.path.join('/dev/', nvme))]
 
-    if nvmes_free:
-        typemap["ephemeral"] = nvmes_free;
+
+    if nvmes_available:
+        typemap["ephemeral"] = nvmes_available;
 
     for dev in devmap.splitlines():
         if dev == "ami" or dev == "root":
@@ -137,7 +135,7 @@ def get_disk_bundles():
         if role[t] == "unused":
             continue
 
-        if t == "ephemeral"  and nvmes_present:
+        if t == "ephemeral"  and nvmes_available:
             continue;
 
         if not typemap.has_key(t):
