@@ -1,0 +1,64 @@
+Name:           {{product}}-ami
+Version:        {{version}}
+Release:        {{release}}%{?dist}
+Summary:        Scylla AMI
+Group:          Applications/Databases
+
+License:        AGPLv3
+URL:            http://www.scylladb.com/
+Source0:        %{name}-{{version}}-{{release}}.tar
+Requires:       scylla = {{version}} scylla-ixgbevf scylla-ena python34 curl
+
+BuildArch:      noarch
+
+%description
+
+
+%prep
+%setup -q
+
+
+%build
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/home/centos
+mkdir -p $RPM_BUILD_ROOT%{_unitdir}
+mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
+
+install -m644 *.service $RPM_BUILD_ROOT%{_unitdir}/
+install -d -m755 $RPM_BUILD_ROOT%{_prefix}/lib/scylla
+install -d -m755 $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
+install -m644 conf.py logger.py $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
+install -m755 ds2_configure.py scylla_ami_setup scylla_create_devices scylla_install_ami scylla_ami_login $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
+install -d -m755 $RPM_BUILD_ROOT/home
+install -d -m755 $RPM_BUILD_ROOT/home/centos
+install -m755 .bash_profile $RPM_BUILD_ROOT/home/centos
+
+%pre
+/usr/sbin/groupadd scylla 2> /dev/null || :
+/usr/sbin/useradd -g scylla -s /sbin/nologin -r -d ${_sharedstatedir}/scylla scylla 2> /dev/null || :
+
+%post
+%systemd_post scylla-ami-setup.service
+
+%preun
+%systemd_preun scylla-ami-setup.service
+
+%postun
+%systemd_postun
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+
+%files
+%defattr(-,root,root)
+
+%config /home/centos/.bash_profile
+%{_unitdir}/scylla-ami-setup.service
+%{_prefix}/lib/scylla/scylla-ami/*
+
+%changelog
+* Mon Aug 20 2018 Takuya ASADA <syuu@scylladb.com>
+- inital version of scylla-ami.spec
