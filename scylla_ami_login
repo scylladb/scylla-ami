@@ -83,6 +83,21 @@ Please wait for startup. To see status of ScyllaDB, run
  'systemctl status scylla-server'
 
 '''[1:-1]
+MSG_SCYLLA_MOUNT_FAILED = '''
+    {red}Failed mounting RAID volume!{nocolor}
+
+ScyllaDB aborted startup because of RAID volume missing.
+To see status, run
+ 'systemctl status scylla-server'
+
+'''[1:-1]
+MSG_SCYLLA_UNKNOWN = '''
+    {red}ScyllaDB is not started!{nocolor}
+
+To see status of ScyllaDB, run
+ 'systemctl status scylla-server'
+
+'''[1:-1]
 MSG_SCYLLA_ACTIVE = '''
     {green}ScyllaDB is active.{nocolor}
 
@@ -96,19 +111,28 @@ if __name__ == '__main__':
     if not aws.is_supported_instance_class():
         colorprint(MSG_UNSUPPORTED_INSTANCE_TYPE.format(type=aws.instance_class()))
     else:
-        setup = systemd_unit('scylla-ami-setup.service')
-        res = setup.is_active()
-        if res == 'activating':
-            colorprint(MSG_SETUP_ACTIVATING)
-        elif res == 'failed':
-            colorprint(MSG_SETUP_FAILED)
-        else:
+        skip_scylla_server = False
+        if not os.path.exists('/etc/scylla/ami_configured'):
+            setup = systemd_unit('scylla-ami-setup.service')
+            res = setup.is_active()
+            if res == 'activating':
+                colorprint(MSG_SETUP_ACTIVATING)
+                skip_scylla_server = True
+            elif res == 'failed':
+                colorprint(MSG_SETUP_FAILED)
+                skip_scylla_server = True
+        if not skip_scylla_server:
             server = systemd_unit('scylla-server.service')
             res = server.is_active()
             if res == 'activating':
                 colorprint(MSG_SCYLLA_ACTIVATING)
             elif res == 'failed':
                 colorprint(MSG_SCYLLA_FAILED)
+            elif res == 'inactive':
+                if os.path.exists('/etc/systemd/system/scylla-server.service.d/mounts.conf'):
+                    colorprint(MSG_SCYLLA_MOUNT_FAILED)
+                else:
+                    colorprint(MSG_SCYLLA_UNKNOWN)
             else:
                 colorprint(MSG_SCYLLA_ACTIVE)
                 run('nodetool status', exception=False)
