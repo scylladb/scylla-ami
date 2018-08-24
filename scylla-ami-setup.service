@@ -2,6 +2,7 @@
 Description=Scylla AMI Setup
 Before=scylla-server.service
 After=network.target
+ConditionPathExists=!/etc/scylla/ami_configured
 
 [Service]
 Type=oneshot
