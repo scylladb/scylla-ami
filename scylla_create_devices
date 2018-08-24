@@ -56,7 +56,8 @@ def config_array(type, disks, role, mdidx):
     subprocess.check_call([raid_script, "--raiddev",
                            raid_device % mdidx, "--disks", ",".join(disk_devs),
                            "--root", scylla_root,
-                           "--volume-role", role ])
+                           "--volume-role", role,
+                           "--update-fstab"])
 
 def xenify(devname):
     dev = curl_instance_data('http://169.254.169.254/latest/meta-data/block-device-mapping/' + devname)

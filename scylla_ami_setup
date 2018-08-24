@@ -38,5 +38,3 @@ if __name__ == '__main__':
         else:
             run('/usr/lib/scylla/scylla_coredump_setup')
         pathlib.Path('/etc/scylla/ami_configured').touch()
-    else:
-        run('/usr/lib/scylla/scylla-ami/scylla_create_devices')
