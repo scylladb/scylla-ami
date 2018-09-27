@@ -34,7 +34,7 @@ install -d -m755 $RPM_BUILD_ROOT%{_prefix}/lib/scylla
 install -d -m755 $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
 install -m644 conf.py logger.py $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
 install -m755 ds2_configure.py scylla_create_devices $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
-./dist/redhat/relocate_python_scripts.py --installroot $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami/ --with-python3 ${RPM_BUILD_ROOT}/opt/scylladb/python3/bin/python3 scylla_ami_setup scylla_install_ami scylla_ami_login
+./dist/redhat/relocate_python_scripts.py --installroot $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami/ --with-python3 ${RPM_BUILD_ROOT}/opt/scylladb/python3/bin/python3 scylla_ami_setup scylla_ami_login
 install -d -m755 $RPM_BUILD_ROOT/home
 install -d -m755 $RPM_BUILD_ROOT/home/centos
 install -m755 .bash_profile $RPM_BUILD_ROOT/home/centos
