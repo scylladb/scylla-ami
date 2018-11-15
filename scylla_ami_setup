@@ -27,9 +27,9 @@ from scylla_util import *
 
 if __name__ == '__main__':
     aws = aws_instance()
-    run('/usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --setup-nic --ami')
     run('/usr/lib/scylla/scylla-ami/ds2_configure.py')
     run('/usr/lib/scylla/scylla-ami/scylla_create_devices')
+    run('/usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --setup-nic --ami')
     if aws.is_supported_instance_class():
         run('/usr/lib/scylla/scylla_io_setup --ami')
     if os.path.ismount('/var/lib/scylla'):
