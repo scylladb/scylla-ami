@@ -4,11 +4,11 @@ PRODUCT=scylla
 
 . /etc/os-release
 print_usage() {
-    echo "build_rpm.sh -target epel-7-x86_64"
-    echo "  --target target distribution in mock cfg name"
+    echo "build_rpm.sh -target centos7"
+    echo "  --target target distribution"
     exit 1
 }
-TARGET=epel-7-x86_64
+TARGET=
 while [ $# -gt 0 ]; do
     case "$1" in
         "--target")
@@ -33,7 +33,6 @@ pkg_install() {
     fi
 }
 
-
 if [ ! -e dist/redhat/build_rpm.sh ]; then
     echo "run build_rpm.sh in top of scylla-ami dir"
     exit 1
@@ -44,8 +43,8 @@ if [ "$(arch)" != "x86_64" ]; then
     exit 1
 fi
 
-if [ ! -f /usr/bin/mock ]; then
-    pkg_install mock
+if [ ! -f /usr/bin/rpmbuild ]; then
+    pkg_install rpm-build
 fi
 if [ ! -f /usr/bin/git ]; then
     pkg_install git
@@ -61,15 +60,14 @@ fi
 VERSION=$(./SCYLLA-VERSION-GEN)
 SCYLLA_VERSION=$(cat build/SCYLLA-VERSION-FILE)
 SCYLLA_RELEASE=$(cat build/SCYLLA-RELEASE-FILE)
-git archive --format=tar --prefix=$PRODUCT-ami-$SCYLLA_VERSION/ HEAD -o build/$PRODUCT-ami-$VERSION.tar
-pystache dist/redhat/scylla-ami.spec.mustache "{ \"version\": \"$SCYLLA_VERSION\", \"release\": \"$SCYLLA_RELEASE\", \"product\": \"$PRODUCT\", \"$PRODUCT\": true }" > build/scylla-ami.spec
 
-# mock generates files owned by root, fix this up
-fix_ownership() {
-    sudo chown "$(id -u):$(id -g)" -R "$@"
-}
+RPMBUILD=$(readlink -f build/)
+mkdir -p $RPMBUILD/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 
-sudo mock --buildsrpm --root=$TARGET --resultdir=`pwd`/build/srpms --spec=build/scylla-ami.spec --sources=build/$PRODUCT-ami-$VERSION.tar
-fix_ownership build/srpms
-sudo mock --rebuild --root=$TARGET --resultdir=`pwd`/build/rpms build/srpms/$PRODUCT-ami-$VERSION*.src.rpm
-fix_ownership build/rpms
+git archive --format=tar --prefix=$PRODUCT-ami-$SCYLLA_VERSION/ HEAD -o $RPMBUILD/SOURCES/$PRODUCT-ami-$VERSION.tar
+pystache dist/redhat/scylla-ami.spec.mustache "{ \"version\": \"$SCYLLA_VERSION\", \"release\": \"$SCYLLA_RELEASE\", \"product\": \"$PRODUCT\", \"$PRODUCT\": true }" > $RPMBUILD/SPECS/scylla-ami.spec
+if [ "$TARGET" = "centos7" ]; then
+    rpmbuild -ba --define "_topdir $RPMBUILD" --define "dist .el7" $RPM_JOBS_OPTS $RPMBUILD/SPECS/scylla-ami.spec
+else
+    rpmbuild -ba --define "_topdir $RPMBUILD" $RPM_JOBS_OPTS $RPMBUILD/SPECS/scylla-ami.spec
+fi
