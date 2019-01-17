@@ -34,8 +34,8 @@ def run(cmd, shell=False):
         cmd = shlex.split(cmd)
     return subprocess.check_call(cmd, shell=shell)
 
-IXGBEVF_VER='4.3.5'
-ENA_VER='1.5.3'
+IXGBEVF_VER='4.3.6'
+ENA_VER='2.0.2'
 
 IXGBEVF_CONF='''
 PACKAGE_NAME="ixgbevf"
