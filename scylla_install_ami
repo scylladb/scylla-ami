@@ -2,8 +2,8 @@
 #
 #  Copyright (C) 2015 ScyllaDB
 
-IXGBEVF_VER=4.3.5
-ENA_VER=1.5.3
+IXGBEVF_VER=4.3.6
+ENA_VER=2.0.2
 
 if [ "`id -u`" -ne 0 ]; then
     echo "Requires root permission."
