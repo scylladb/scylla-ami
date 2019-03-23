@@ -11,6 +11,9 @@ Requires:       {{product}} = {{version}} scylla-ixgbevf scylla-ena python34 cur
 
 BuildArch:      noarch
 
+%global __brp_python_bytecompile %{nil}
+%global __brp_mangle_shebangs %{nil}
+
 %description
 
 
@@ -30,7 +33,8 @@ install -m644 *.service $RPM_BUILD_ROOT%{_unitdir}/
 install -d -m755 $RPM_BUILD_ROOT%{_prefix}/lib/scylla
 install -d -m755 $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
 install -m644 conf.py logger.py $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
-install -m755 ds2_configure.py scylla_ami_setup scylla_create_devices scylla_install_ami scylla_ami_login $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
+install -m755 ds2_configure.py scylla_create_devices $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami
+./dist/redhat/relocate_python_scripts.py --installroot $RPM_BUILD_ROOT%{_prefix}/lib/scylla/scylla-ami/ --with-python3 ${RPM_BUILD_ROOT}/opt/scylladb/python3/bin/python3 scylla_ami_setup scylla_install_ami scylla_ami_login
 install -d -m755 $RPM_BUILD_ROOT/home
 install -d -m755 $RPM_BUILD_ROOT/home/centos
 install -m755 .bash_profile $RPM_BUILD_ROOT/home/centos
