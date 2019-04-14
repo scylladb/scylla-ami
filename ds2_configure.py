@@ -213,7 +213,7 @@ def parse_ec2_userdata():
     # Option that allows for an OpsCenter to enable the SSL setting
     parser.add_argument("--opscenterssl", action="store_true", dest="opscenterssl")
     # Option that enforces a bootstrapping node
-    parser.add_argument("--bootstrap", action="store_true", dest="bootstrap", default=False)
+    parser.add_argument("--bootstrap", action="store_true", dest="bootstrap", default=True)
     # Option that enforces vnodes
     parser.add_argument("--vnodes", action="store_true", dest="vnodes", default=False)
     # Option that allows for an emailed report of the startup diagnostics
