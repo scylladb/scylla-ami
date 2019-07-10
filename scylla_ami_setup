@@ -22,18 +22,18 @@
 import os
 import sys
 import pathlib
-sys.path.append('/usr/lib/scylla')
+sys.path.append('/opt/scylladb/scripts')
 from scylla_util import *
 
 if __name__ == '__main__':
     aws = aws_instance()
-    run('/usr/lib/scylla/scylla-ami/ds2_configure.py')
-    run('/usr/lib/scylla/scylla-ami/scylla_create_devices')
-    run('/usr/lib/scylla/scylla_sysconfig_setup --nic eth0 --setup-nic --ami')
+    run('/opt/scylladb/scylla-ami/ds2_configure.py')
+    run('/opt/scylladb/scylla-ami/scylla_create_devices')
+    run('/opt/scylladb/scripts/scylla_sysconfig_setup --nic eth0 --setup-nic --ami')
     if aws.is_supported_instance_class():
-        run('/usr/lib/scylla/scylla_io_setup --ami')
+        run('/opt/scylladb/scripts/scylla_io_setup --ami')
     if os.path.ismount('/var/lib/scylla'):
-        run('/usr/lib/scylla/scylla_coredump_setup --dump-to-raiddir')
+        run('/opt/scylladb/scripts/scylla_coredump_setup --dump-to-raiddir')
     else:
-        run('/usr/lib/scylla/scylla_coredump_setup')
+        run('/opt/scylladb/scripts/scylla_coredump_setup')
     pathlib.Path('/etc/scylla/ami_configured').touch()

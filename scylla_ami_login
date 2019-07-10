@@ -22,7 +22,7 @@
 import os
 import sys
 import argparse
-sys.path.append('/usr/lib/scylla')
+sys.path.append('/opt/scylladb/scripts')
 from scylla_util import *
 
 MSG_HEADER = '''
@@ -137,6 +137,6 @@ if __name__ == '__main__':
                 colorprint(MSG_SCYLLA_ACTIVE)
                 run('nodetool status', exception=False)
         print('    ', end='')
-        res = run('/usr/lib/scylla/scylla_ec2_check --nic eth0', exception=False)
+        res = run('/opt/scylladb/scripts/scylla_ec2_check --nic eth0', exception=False)
         if res == 0:
             print('')

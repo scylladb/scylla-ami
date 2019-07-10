@@ -9,7 +9,7 @@ import conf
 import os
 import sys
 
-raid_script="/usr/lib/scylla/scylla_raid_setup"
+raid_script="/opt/scylladb/scripts/scylla_raid_setup"
 raid_device = "/dev/md%d"
 scylla_root = "/var/lib/scylla"
 

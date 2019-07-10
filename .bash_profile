@@ -11,4 +11,4 @@ PATH=$PATH:$HOME/.local/bin:$HOME/bin
 
 export PATH
 
-/usr/lib/scylla/scylla-ami/scylla_ami_login
+/opt/scylladb/scylla-ami/scylla_ami_login
