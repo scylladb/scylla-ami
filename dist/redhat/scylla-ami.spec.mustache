@@ -48,7 +48,7 @@ install -m755 .bash_profile $RPM_BUILD_ROOT/home/centos
 %systemd_preun scylla-ami-setup.service
 
 %postun
-%systemd_postun
+%systemd_postun scylla-ami-setup.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT
