@@ -67,7 +67,7 @@ mkdir -p $RPMBUILD/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 git archive --format=tar --prefix=$PRODUCT-ami-$SCYLLA_VERSION/ HEAD -o $RPMBUILD/SOURCES/$PRODUCT-ami-$VERSION.tar
 pystache dist/redhat/scylla-ami.spec.mustache "{ \"version\": \"$SCYLLA_VERSION\", \"release\": \"$SCYLLA_RELEASE\", \"product\": \"$PRODUCT\", \"$PRODUCT\": true }" > $RPMBUILD/SPECS/scylla-ami.spec
 if [ "$TARGET" = "centos7" ]; then
-    rpmbuild -ba --define "_topdir $RPMBUILD" --define "dist .el7" $RPM_JOBS_OPTS $RPMBUILD/SPECS/scylla-ami.spec
+    rpmbuild -ba --define '_binary_payload w2.xzdio' --define "_topdir $RPMBUILD" --define "dist .el7" $RPM_JOBS_OPTS $RPMBUILD/SPECS/scylla-ami.spec
 else
-    rpmbuild -ba --define "_topdir $RPMBUILD" $RPM_JOBS_OPTS $RPMBUILD/SPECS/scylla-ami.spec
+    rpmbuild -ba --define '_binary_payload w2.xzdio' --define "_topdir $RPMBUILD" $RPM_JOBS_OPTS $RPMBUILD/SPECS/scylla-ami.spec
 fi
